@@ -1,0 +1,11 @@
+pandas
+numpy
+torch
+transformers==4.36.0
+sentence-transformers==2.2.2
+chromadb
+openai
+tiktoken
+huggingface_hub==0.19.4
+matplotlib
+seaborn
