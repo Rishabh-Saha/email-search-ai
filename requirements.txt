@@ -9,5 +9,3 @@ tiktoken
 huggingface_hub==0.19.4
 matplotlib
 seaborn
-beautifulsoup4
-python-dotenv
