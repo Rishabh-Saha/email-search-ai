@@ -32,57 +32,44 @@ data/csv/
 
 ## ⚙️ System Architecture
 
+![System Architecture](./assets/EmailSearchAI_SystemArchitecture.png)
+
 The pipeline has three main layers:
 
 ### 1. Embedding Layer
 - **Ingestion & Cleaning**: Load and normalize email bodies from CSV.
 - **Embeddings**: Use OpenAI embeddings (`text-embedding-ada-002`) for the vector database.
 - **Metadata Enrichment**: Add features like text length, number of emails per thread, and key participants.
-- **Re-ranking**: Use `sentence-transformers` cross-encoder (e.g., `ms-marco-MiniLM-L6-v2`) for top results.
+- **Vector Store**: ChromaDB (persistent client, local directory).
+- **Batching**: Add documents in batches to avoid token limits.
+- **Indexing**: Store summaries and email bodies in separate collections.
 
 ### 2. Search Layer
-- **Vector Store**: ChromaDB (persistent client, local directory).
-- **Indexing**: Store summaries and email bodies in separate collections.
+- **Querying**: Use user questions to query the vector store.
 - **Hybrid Retrieval**: Query summaries for relevant threads, then fetch top-k emails from details collection.
-- **Batching**: Add documents in batches to avoid token limits.
+- **Re-ranking**: Use `sentence-transformers` cross-encoder (e.g., `ms-marco-MiniLM-L6-v2`) for top results.
 
 ### 3. Generation Layer
 - **Prompting**: Use OpenAI chat models (e.g., GPT-4.1) to generate summaries and answers.
-- **Citation**: Responses include direct answers and evidence with provenance (thread ID, date, subject).
-- **API Key**: Loaded from `.env` file for OpenAI access.
+- **Citation**: Responses include direct answers and evidence with proof (thread ID, date, subject).
 
 ---
 
-## 📖 Notebook Sections
-
-The notebook (`EmailSearchAI.ipynb`) is structured as:
-
-1. **Background**
-2. **Problem Statement**
-3. **Dataset**
-4. **Approach**
-5. **System Layers**
-6. **Prerequisites**
-7. Environment Setup
-8. Ingestion
-9. Chunking
-10. Embeddings & Index
-11. Search + Cache
-12. Re-ranking
-13. Generation
-14. End-to-End Queries
-15. (Optional) Multi-query Evaluation
-
 ---
 
-## 🖼️ Required Screenshots
+## 🖼️ Screenshots
 
-As part of evaluation, the project captures:
+- *Who was part of the Credit group lunch?*
+![Credit Group Lunch Top 5 Emails](./assets/credit_group_lunch_top_n_answers.png)
+![Credit Group Lunch Final Answer](./assets/credit_group_lunch_model_response.png)
 
-- **Top-3 Retrieved Chunks** for each of 3 queries (3 screenshots)
-- **Final Generated Answers** for the same queries (3 screenshots)
+- *Did anyone in the company ran a marathon? When and Where?*
+![Company Marathon Top 5 Emails](./assets/company_marathon_top_n_answers.png)
+![Company Marathon Final Answer](./assets/company_marathon_model_response.png)
 
-Total: **6 screenshots**.
+- *Does anyone play Mondolin?*
+![Mondolin Top 5 Emails](./assets/mondolin_top_n_answers.png)
+![Mondolin Final Answer](./assets/mondolin_model_response.png)
 
 ---
 
@@ -148,7 +135,8 @@ Main dependencies (see `requirements.txt` for full list):
 
 ## 🧪 Sample Queries
 
-- *“What decision was reached in the Q3 forecast thread and who approved it?”*  
+- *“Who were the main decision-makers in the thread about the Q3 financial forecast, and what actions were agreed upon?”*
+
 - *“Summarize the migration decision for the data warehouse (vendor, date, risks).”*  
 - *“List follow-up action items assigned to Finance after November meetings.”*
 
